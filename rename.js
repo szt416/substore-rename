@@ -33,7 +33,7 @@
                              | false|0|off|no（不过滤<默认>）                                | 过滤没有匹配到的节点
   rateRange <string>         | 区间表达式，如 !1.5|,2|5                                      | 过滤倍率区间，支持多区间与区间级别取反。多个区间用逗号分隔，!前缀表示取反区间。例如：rateRange=!1.5|,2|5 表示倍率小于1.5或在2~5之间（含2和5）的节点会被保留。区间边界为空表示无穷大/小，如"|3" 表示小于等于3，"5|"表示大于等于5。
   providerLabelSep <string>  | 1-2字符（默认"|"）                                            | providerLabel分隔符，1字符时添加到providerLabel后/前，2字符时分别为左右边界
-  indexLabelSep <string>     | 1-2字符（默认"#"）                                            | 节点序号标签（indexLabel）分隔符，1字符时添加到indexLabel前，2字符时分别为左右边界
+  indexLabelSep <string>     | 1-2字符（默认无）                                             | 节点序号标签（indexLabel）分隔符，默认直接输出两位序号
   attrLabelSep <string>      | 1-2字符（默认"[]"）                                           | 属性标签分隔符，1字符时添加到属性标签前，2字符时为左右边界（属性标签的定义见下方示例）
   attrItemSep <string>       | 1字符（默认"|"）                                              | 属性标签元素之间的分隔符
   sortNodes <bool>           | true|1|on|yes（排序）                                         |
@@ -58,11 +58,11 @@
 // "AnyTLS"：自定义标签（customLabel）
 // "[]"：属性标签分隔符（attrLabelSep）
 
-示例二：🇺🇸 United States#1 <3×|IPLC|VLESS+REALITY> | SomeVPS
+示例二：🇺🇸 United States 01 <3×|IPLC|VLESS+REALITY> | SomeVPS
 // "🇺🇸"：国旗标签（flagLabel）
 // "United States"：国家标签（countryLabel）
 // "1"：序号标签（indexLabel）
-// "#"：序号标签分隔符（indexLabelSep）
+// "无"：默认不使用序号标签分隔符
 // "3×|IPLC|VLESS+REALITY"：整体称为属性标签（attrLabel）
 // "|"：属性标签元素分隔符（attrItemSep）
 // "3×"：倍率标签（rateLabel）
@@ -119,7 +119,7 @@ const countryLabelType = parseEnumArg(inArg.countryLabelType, ["zh", "en", "code
       customLabel = inArg.customLabel == undefined ? "" : decodeURI(inArg.customLabel),
       rateRange = inArg.rateRange == undefined ? "" : decodeURI(inArg.rateRange),
       providerLabelSep = parseSepArg(inArg.providerLabelSep == undefined ? "|" : decodeURI(inArg.providerLabelSep), "|"),
-      indexLabelSep = parseSepArg(inArg.indexLabelSep == undefined ? "#" : decodeURI(inArg.indexLabelSep), "#"),
+      indexLabelSep = parseSepArg(inArg.indexLabelSep == undefined ? "" : decodeURI(inArg.indexLabelSep), ""),
       attrLabelSep = parseSepArg(inArg.attrLabelSep === undefined ? '[]' : decodeURI(inArg.attrLabelSep), '[]'),
       attrItemSep = parseSepArg(inArg.attrItemSep === undefined ? '|' : decodeURI(inArg.attrItemSep), '|');
       
@@ -632,8 +632,8 @@ function sortByGroup(nodes, customLabelArr) {
 function addIndex(nodes, rmSingleIdx = false) {
   if (!Array.isArray(nodes) || nodes.length === 0) return nodes;
   // 处理分隔符
-  const sepArr = indexLabelSep ? parseSep(indexLabelSep) : ["#"];
-  const sepLeft = sepArr[0] || "#";
+  const sepArr = indexLabelSep ? parseSep(indexLabelSep) : [];
+  const sepLeft = sepArr[0] || "";
   const sepRight = sepArr[1] || "";
 
   // 按国家标签分组，只处理 _matched==true 的节点
@@ -652,7 +652,8 @@ function addIndex(nodes, rmSingleIdx = false) {
   }
   // 对每个国家分组添加序号。后续会把云厂商追加到序号之后。
   function appendIndex(name, sepLeft, index, sepRight) {
-    return name + " " + sepLeft + index + sepRight;
+    const formattedIndex = String(index).padStart(2, "0");
+    return name + " " + sepLeft + formattedIndex + sepRight;
   }
   for (const [countryKey, group] of countryMap.entries()) {
     if (rmSingleIdx && group.length === 1) {
@@ -680,7 +681,7 @@ function operator(nodes) {
 
   const CUSTOM_LABELS = parseCustomLabel(customLabel);
 
-  const ilSepArr = indexLabelSep ? parseSep(indexLabelSep) : ["#"];
+  const ilSepArr = indexLabelSep ? parseSep(indexLabelSep) : [];
 
   const resultNodes = [];
   const concatNodes = [];
