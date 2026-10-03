@@ -100,7 +100,7 @@ rmSingleIdx=false
 将脚本发布到自己的 GitHub 仓库或其他静态地址，然后把参数拼接到脚本 URL 后面：
 
 ```text
-https://你的用户名.github.io/substore-rename/rename.js#providerLabel=%E6%9C%BA%E5%9C%BAA&countryLabelType=zh&addFlagLabel=true&sortNodes=true
+https://raw.githubusercontent.com/szt416/substore-rename/refs/heads/main/rename.js#providerLabel=%E6%9C%BA%E5%9C%BAA&countryLabelType=zh&addFlagLabel=true&sortNodes=true
 ```
 
 参数之间使用 `&` 连接，参数值需要进行 URI 编码。
