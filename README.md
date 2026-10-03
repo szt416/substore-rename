@@ -13,10 +13,10 @@
 示例：
 
 ```text
-🇭🇰 香港 机场A 专线 #1 Azure
-🇭🇰 香港 机场A #2
-🇺🇸 美国 机场A 专线 #1 AWS
-🇯🇵 日本 机场A #1
+🇭🇰 香港 机场A 专线 01 Azure
+🇭🇰 香港 机场A 02
+🇺🇸 美国 机场A 专线 01 AWS
+🇯🇵 日本 机场A 01
 ```
 
 倍率、节点协议、地区别名、原始线路编号、套餐信息和其他无关内容均不会保留。
@@ -28,7 +28,7 @@
 - **国旗与多语言**：支持中文国家名、英文国家名或两位国家代码。
 - **专线识别**：识别 `专线`、`DL`、`dedicated`、`dedicated line` 等关键词。
 - **云厂商识别**：从原始节点名中识别云服务厂商，并统一追加到名称最后。
-- **国家分组序号**：按国家分组生成 `#1`、`#2` 等序号。
+- **国家分组序号**：按国家分组生成 `01`、`02` 至 `99` 的两位序号。
 - **节点排序**：可按国家识别顺序和线路标签对节点进行整理。
 - **无效节点过滤**：过滤套餐、到期、流量、官网、客服等非节点信息。
 - **未识别节点过滤**：无法识别国家或地区的节点不会保留。
@@ -56,7 +56,7 @@
 | `addFlagLabel` | `true` / `false` | `true` | 是否添加国旗 |
 | `sortNodes` | `true` / `false` | `false` | 是否按国家和线路顺序整理节点 |
 | `rmSingleIdx` | `true` / `false` | `false` | 单个节点国家是否移除序号 |
-| `indexLabelSep` | 1-2 个符号 | `#` | 序号前后的分隔符 |
+| `indexLabelSep` | 1-2 个符号 | 无 | 序号前后的分隔符；默认不添加任何前缀 |
 | `filterInvalid` | `true` / `false` | `true` | 是否过滤套餐、官网、流量等无效信息 |
 | `filterUnmatched` | `true` / `false` | `false` | 兼容旧参数；本版本始终过滤无法识别国家的节点 |
 | `blockQuic` | `true` / `false` | `false` | 是否为节点添加 `block-quic=on` |
@@ -100,7 +100,7 @@ rmSingleIdx=false
 将脚本发布到自己的 GitHub 仓库或其他静态地址，然后把参数拼接到脚本 URL 后面：
 
 ```text
-https://raw.githubusercontent.com/szt416/substore-rename/refs/heads/main/rename.js#providerLabel=%E6%9C%BA%E5%9C%BAA&countryLabelType=zh&addFlagLabel=true&sortNodes=true
+https://你的用户名.github.io/substore-rename/rename.js#providerLabel=%E6%9C%BA%E5%9C%BAA&countryLabelType=zh&addFlagLabel=true&sortNodes=true
 ```
 
 参数之间使用 `&` 连接，参数值需要进行 URI 编码。
@@ -134,7 +134,7 @@ sortNodes=true
 输出示例：
 
 ```text
-🇺🇸 United States MyVPS #1 AWS
+🇺🇸 United States MyVPS 01 AWS
 ```
 
 ### 使用国家代码
@@ -149,7 +149,7 @@ sortNodes=true
 输出示例：
 
 ```text
-🇭🇰 HK 机场A 专线 #1
+🇭🇰 HK 机场A 专线 01
 ```
 
 ### 单节点国家不显示序号
@@ -159,7 +159,7 @@ providerLabel=机场A
 rmSingleIdx=true
 ```
 
-### 自定义序号格式
+### 自定义序号分隔符
 
 ```text
 providerLabel=机场A
@@ -169,7 +169,7 @@ indexLabelSep=[]
 输出类似：
 
 ```text
-🇭🇰 香港 机场A [1] AWS
+🇭🇰 香港 机场A [01] AWS
 ```
 
 ## 专线识别
@@ -214,7 +214,7 @@ indexLabelSep=[]
 4. 从原始名称中识别专线和云服务厂商。
 5. 按参数生成国旗和国家名称。
 6. 添加机场名或自定义名称。
-7. 按国家分组生成序号。
+7. 按国家分组生成两位序号（`01` 至 `99`）。
 8. 将云服务厂商追加到最终名称。
 9. 清理临时字段并返回节点。
 
@@ -226,6 +226,12 @@ indexLabelSep=[]
 - 不访问外部 API。
 - 订阅节点内容只在本地处理。
 
+## 文件
+
+```text
+rename.js   Sub-Store 重命名脚本
+README.md   使用说明
+```
 
 ## 许可证
 
