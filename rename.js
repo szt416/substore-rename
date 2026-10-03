@@ -119,7 +119,8 @@ const countryLabelType = parseEnumArg(inArg.countryLabelType, ["zh", "en", "code
       customLabel = inArg.customLabel == undefined ? "" : decodeURI(inArg.customLabel),
       rateRange = inArg.rateRange == undefined ? "" : decodeURI(inArg.rateRange),
       providerLabelSep = parseSepArg(inArg.providerLabelSep == undefined ? "|" : decodeURI(inArg.providerLabelSep), "|"),
-      indexLabelSep = parseSepArg(inArg.indexLabelSep == undefined ? "" : decodeURI(inArg.indexLabelSep), ""),
+      // 序号固定为两位数字，不再允许旧参数添加 # 等前缀。
+      indexLabelSep = "",
       attrLabelSep = parseSepArg(inArg.attrLabelSep === undefined ? '[]' : decodeURI(inArg.attrLabelSep), '[]'),
       attrItemSep = parseSepArg(inArg.attrItemSep === undefined ? '|' : decodeURI(inArg.attrItemSep), '|');
       
@@ -631,11 +632,6 @@ function sortByGroup(nodes, customLabelArr) {
 
 function addIndex(nodes, rmSingleIdx = false) {
   if (!Array.isArray(nodes) || nodes.length === 0) return nodes;
-  // 处理分隔符
-  const sepArr = indexLabelSep ? parseSep(indexLabelSep) : [];
-  const sepLeft = sepArr[0] || "";
-  const sepRight = sepArr[1] || "";
-
   // 按国家标签分组，只处理 _matched==true 的节点
   const countryMap = new Map();
   const matchedNodes = [];
@@ -651,9 +647,9 @@ function addIndex(nodes, rmSingleIdx = false) {
     }
   }
   // 对每个国家分组添加序号。后续会把云厂商追加到序号之后。
-  function appendIndex(name, sepLeft, index, sepRight) {
+  function appendIndex(name, index) {
     const formattedIndex = String(index).padStart(2, "0");
-    return name + " " + sepLeft + formattedIndex + sepRight;
+    return name + " " + formattedIndex;
   }
   for (const [countryKey, group] of countryMap.entries()) {
     if (rmSingleIdx && group.length === 1) {
@@ -661,7 +657,7 @@ function addIndex(nodes, rmSingleIdx = false) {
       matchedNodes.push({ ...group[0] });
     } else {
       for (let i = 0; i < group.length; i++) {
-        const newName = appendIndex(group[i].name, sepLeft, i + 1, sepRight);
+        const newName = appendIndex(group[i].name, i + 1);
         const node = { ...group[i], name: newName };
         matchedNodes.push(node);
       }
