@@ -226,12 +226,6 @@ indexLabelSep=[]
 - 不访问外部 API。
 - 订阅节点内容只在本地处理。
 
-## 文件
-
-```text
-rename.js   Sub-Store 重命名脚本
-README.md   使用说明
-```
 
 ## 许可证
 
